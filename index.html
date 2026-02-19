@@ -81,6 +81,24 @@
             gap: 12px;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-link:hover {
+            opacity: 0.8;
+        }
+
         /* 按钮样式 */
         .btn {
             padding: 8px 16px;
@@ -93,6 +111,7 @@
             background-color: transparent;
             color: var(--text-primary);
         }
+    
 
         .btn:hover {
             background-color: var(--border);
@@ -154,6 +173,7 @@
             position: relative;
             width: 100%;
             box-sizing: border-box;
+            padding-bottom: 100px; /* 为移动端翻页控件留出空间 */
         }
 
         .pdf-container {
@@ -440,6 +460,18 @@
             background-color: var(--bg-secondary);
             border-top: 1px solid var(--border);
             box-sizing: border-box;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        /* 确保在移动设备上显示移动端翻页控件 */
+        @media (max-width: 768px) {
+            .mobile-pagination {
+                display: flex !important;
+            }
         }
 
         .mobile-btn {
@@ -583,6 +615,7 @@
             <div class="header-left">
                 <div class="logo">电子画册</div>
                 <div class="document-title">文档名称</div>
+                <a href="library.html" class="nav-link">管理画册</a>
             </div>
             <div class="header-right">
                 <label class="btn" for="fileInput">上传PDF</label>
@@ -664,6 +697,9 @@
         let totalPages = 0;
         let zoom = 1;
         let darkMode = true;
+        // 触摸相关变量
+        let touchStartX = 0;
+        let touchEndX = 0;
 
         // DOM 元素
         const pdfContainer = document.getElementById('pdfContainer');
@@ -671,6 +707,34 @@
         const thumbnailList = document.getElementById('thumbnailList');
         const zoomLevel = document.getElementById('zoomLevel');
         const themeToggle = document.getElementById('themeToggle');
+
+        // 触摸事件监听
+        document.addEventListener('touchstart', handleTouchStart, false);
+        document.addEventListener('touchend', handleTouchEnd, false);
+
+        // 触摸开始处理
+        function handleTouchStart(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }
+
+        // 触摸结束处理
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }
+
+        // 处理滑动逻辑
+        function handleSwipe() {
+            const swipeThreshold = 50; // 滑动阈值
+            
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // 向左滑动，下一页
+                showNextPage();
+            } else if (touchEndX > touchStartX + swipeThreshold) {
+                // 向右滑动，上一页
+                showPrevPage();
+            }
+        }
 
         // 按钮事件监听
         document.getElementById('prevBtn').addEventListener('click', showPrevPage);
@@ -693,56 +757,30 @@
         let currentFile = null;
 
         // 初始化
-        async function init() {
-            try {
-                // 显示加载状态
-                pdfContainer.innerHTML = `
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>加载文档中...</p>
-                    </div>
-                `;
-                
-                // 尝试加载相对路径的PDF文件
-                const pdfPath = '广东多可公司魔术涂料广告页电子书.pdf';
-                
-                try {
-                    // 尝试通过相对路径加载
-                    pdfDoc = await pdfjsLib.getDocument(pdfPath).promise;
-                    totalPages = pdfDoc.numPages;
-                    currentPage = 1;
-                    zoom = 1;
-                    
-                    document.querySelector('.document-title').textContent = '广东多可公司魔术涂料广告页电子书';
-                    pageInfo.textContent = `第 ${currentPage} 页，共 ${totalPages} 页`;
-                    
-                    // 更新移动端页面信息
-                    const mobilePageInfo = document.getElementById('mobilePageInfo');
-                    if (mobilePageInfo) {
-                        mobilePageInfo.textContent = `第 ${currentPage} 页，共 ${totalPages} 页`;
-                    }
-                    
-                    zoomLevel.textContent = '100%';
-                    
-                    // 渲染第一页
-                    await renderPage(currentPage);
-                    
-                    // 生成缩略图
-                    await generateThumbnails();
-                } catch (loadError) {
-                    console.warn('相对路径加载失败，显示上传提示:', loadError);
-                    // 加载失败时显示上传提示
-                    pdfContainer.innerHTML = `
-                        <div style="text-align: center; padding: 60px;">
-                            <p style="margin-bottom: 20px;">加载失败，请手动选择文件：</p>
-                            <p style="font-weight: 500; margin-bottom: 30px;">广东多可公司魔术涂料广告页电子书.pdf</p>
-                            <label class="btn btn-accent" for="fileInput">选择文件</label>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('初始化失败:', error);
-                pdfContainer.innerHTML = '<p style="text-align: center; padding: 40px;">初始化失败，请稍后重试</p>';
+        function init() {
+            // 直接显示上传提示，不尝试加载相对路径的PDF文件
+            pdfContainer.innerHTML = `
+                <div style="text-align: center; padding: 60px;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 20px; color: var(--accent);">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <h3 style="margin-bottom: 16px;">欢迎使用电子画册阅读器</h3>
+                    <p style="margin-bottom: 30px; color: var(--text-secondary);">请上传PDF文件开始阅读</p>
+                    <label class="btn btn-accent" for="fileInput">上传PDF文件</label>
+                </div>
+            `;
+            
+            // 初始化页面信息
+            document.querySelector('.document-title').textContent = '请上传PDF文件';
+            pageInfo.textContent = '第 0 页，共 0 页';
+            zoomLevel.textContent = '100%';
+            
+            // 更新移动端页面信息
+            const mobilePageInfo = document.getElementById('mobilePageInfo');
+            if (mobilePageInfo) {
+                mobilePageInfo.textContent = '第 0 页，共 0 页';
             }
         }
 
@@ -819,9 +857,70 @@
             canvas.height = viewport.height;
             canvas.className = 'pdf-page';
             
-            // 清除容器
-            pdfContainer.innerHTML = '';
-            pdfContainer.appendChild(canvas);
+            // 找到现有的pdf-container或创建一个
+            let pdfCanvasContainer = document.querySelector('.pdf-container');
+            if (!pdfCanvasContainer) {
+                pdfCanvasContainer = document.createElement('div');
+                pdfCanvasContainer.className = 'pdf-container';
+                
+                // 重新创建完整的界面结构
+                pdfContainer.innerHTML = `
+                    <div class="pdf-container">
+                        <!-- canvas will be inserted here -->
+                    </div>
+                    
+                    <!-- 工具栏 -->
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <button class="btn" id="prevBtn">上一页</button>
+                            <button class="btn" id="nextBtn">下一页</button>
+                            <div class="page-info" id="pageInfo">第 ${pageNum} 页，共 ${totalPages} 页</div>
+                        </div>
+                        <div class="toolbar-right">
+                            <div class="zoom-control">
+                                <button class="btn" id="zoomOutBtn">-</button>
+                                <span id="zoomLevel">${Math.round(zoom * 100)}%</span>
+                                <button class="btn" id="zoomInBtn">+</button>
+                            </div>
+                            <button class="btn" id="fullscreenBtn">全屏</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 移动端底部翻页控件 -->
+                    <div class="mobile-pagination">
+                        <button class="mobile-btn mobile-prev" id="mobilePrevBtn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                            <span>上一页</span>
+                        </button>
+                        <div class="mobile-page-info">
+                            <span id="mobilePageInfo">第 ${pageNum} 页，共 ${totalPages} 页</span>
+                        </div>
+                        <button class="mobile-btn mobile-next" id="mobileNextBtn">
+                            <span>下一页</span>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                
+                // 重新添加事件监听器
+                document.getElementById('prevBtn').addEventListener('click', showPrevPage);
+                document.getElementById('nextBtn').addEventListener('click', showNextPage);
+                document.getElementById('zoomInBtn').addEventListener('click', zoomIn);
+                document.getElementById('zoomOutBtn').addEventListener('click', zoomOut);
+                document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+                document.getElementById('mobilePrevBtn').addEventListener('click', showPrevPage);
+                document.getElementById('mobileNextBtn').addEventListener('click', showNextPage);
+                
+                pdfCanvasContainer = document.querySelector('.pdf-container');
+            }
+            
+            // 只更新canvas部分
+            pdfCanvasContainer.innerHTML = '';
+            pdfCanvasContainer.appendChild(canvas);
             
             // 渲染 PDF 内容
             const renderContext = {
@@ -831,13 +930,18 @@
             
             await page.render(renderContext).promise;
             currentPage = pageNum;
-            pageInfo.textContent = `第 ${currentPage} 页，共 ${totalPages} 页`;
+            
+            // 更新页面信息
+            document.getElementById('pageInfo').textContent = `第 ${currentPage} 页，共 ${totalPages} 页`;
             
             // 更新移动端页面信息
             const mobilePageInfo = document.getElementById('mobilePageInfo');
             if (mobilePageInfo) {
                 mobilePageInfo.textContent = `第 ${currentPage} 页，共 ${totalPages} 页`;
             }
+            
+            // 更新缩放级别显示
+            document.getElementById('zoomLevel').textContent = `${Math.round(zoom * 100)}%`;
             
             // 更新缩略图激活状态
             updateThumbnailActiveState();

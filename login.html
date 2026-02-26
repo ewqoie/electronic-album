@@ -750,9 +750,22 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
+            // 创建错误信息显示区域
+            let errorDiv = document.getElementById('loginError');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'loginError';
+                errorDiv.style.color = 'red';
+                errorDiv.style.marginTop = '10px';
+                document.querySelector('#loginForm form').appendChild(errorDiv);
+            }
+
+            errorDiv.innerHTML = '登录中...';
+
             try {
                 // 调用后端API登录
-                const response = await fetch('/api/auth/login', {
+                errorDiv.innerHTML += '<br>准备发送登录请求';
+                const response = await fetch('http://localhost:3000/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -760,7 +773,22 @@
                     body: JSON.stringify({ email, password })
                 });
 
-                const data = await response.json();
+                errorDiv.innerHTML += '<br>登录响应状态: ' + response.status;
+
+                // 尝试读取响应文本
+                errorDiv.innerHTML += '<br>准备读取响应文本';
+                const text = await response.text();
+                errorDiv.innerHTML += '<br>登录响应文本: ' + text;
+
+                // 检查响应文本是否为空
+                if (!text) {
+                    throw new Error('响应文本为空');
+                }
+
+                // 尝试解析JSON
+                errorDiv.innerHTML += '<br>准备解析JSON';
+                const data = JSON.parse(text);
+                errorDiv.innerHTML += '<br>登录响应JSON: ' + JSON.stringify(data);
 
                 if (!response.ok) {
                     throw new Error(data.error || '登录失败');
@@ -781,6 +809,8 @@
                 alert('登录成功！');
                 window.location.href = 'index.html';
             } catch (error) {
+                errorDiv.innerHTML += '<br>登录错误: ' + error.message;
+                errorDiv.innerHTML += '<br>登录错误堆栈: ' + error.stack;
                 alert('登录失败：' + error.message);
             }
         }
@@ -796,9 +826,22 @@
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
 
+            // 创建错误信息显示区域
+            let errorDiv = document.getElementById('registerError');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'registerError';
+                errorDiv.style.color = 'red';
+                errorDiv.style.marginTop = '10px';
+                document.querySelector('#registerForm form').appendChild(errorDiv);
+            }
+
+            errorDiv.innerHTML = '注册中...';
+
             try {
                 // 调用后端API注册
-                const response = await fetch('/api/auth/register', {
+                errorDiv.innerHTML += '<br>准备发送注册请求';
+                const response = await fetch('http://localhost:3000/api/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -806,7 +849,22 @@
                     body: JSON.stringify({ name, email, password })
                 });
 
-                const data = await response.json();
+                errorDiv.innerHTML += '<br>注册响应状态: ' + response.status;
+
+                // 尝试读取响应文本
+                errorDiv.innerHTML += '<br>准备读取响应文本';
+                const text = await response.text();
+                errorDiv.innerHTML += '<br>注册响应文本: ' + text;
+
+                // 检查响应文本是否为空
+                if (!text) {
+                    throw new Error('响应文本为空');
+                }
+
+                // 尝试解析JSON
+                errorDiv.innerHTML += '<br>准备解析JSON';
+                const data = JSON.parse(text);
+                errorDiv.innerHTML += '<br>注册响应JSON: ' + JSON.stringify(data);
 
                 if (!response.ok) {
                     throw new Error(data.error || '注册失败');
@@ -827,6 +885,8 @@
                 alert('注册成功！');
                 window.location.href = 'index.html';
             } catch (error) {
+                errorDiv.innerHTML += '<br>注册错误: ' + error.message;
+                errorDiv.innerHTML += '<br>注册错误堆栈: ' + error.stack;
                 alert('注册失败：' + error.message);
             }
         }

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简化登录测试</title>
+</head>
+<body>
+    <h1>简化登录测试</h1>
+    
+    <h2>登录</h2>
+    <form onsubmit="handleLogin(event)">
+        <input type="email" id="loginEmail" placeholder="邮箱" required><br>
+        <input type="password" id="loginPassword" placeholder="密码" required><br>
+        <button type="submit">登录</button>
+    </form>
+    
+    <h2>注册</h2>
+    <form onsubmit="handleRegister(event)">
+        <input type="text" id="registerName" placeholder="用户名" required><br>
+        <input type="email" id="registerEmail" placeholder="邮箱" required><br>
+        <input type="password" id="registerPassword" placeholder="密码" required><br>
+        <button type="submit">注册</button>
+    </form>
+    
+    <div id="result"></div>
+
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '登录中...';
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                console.log('开始登录');
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                console.log('登录响应状态:', response.status);
+                
+                const text = await response.text();
+                console.log('登录响应文本:', text);
+                
+                if (!text) {
+                    throw new Error('响应文本为空');
+                }
+                
+                const data = JSON.parse(text);
+                console.log('登录响应JSON:', data);
+                
+                if (!response.ok) {
+                    throw new Error(data.error || '登录失败');
+                }
+                
+                resultDiv.innerHTML = '登录成功: ' + JSON.stringify(data);
+            } catch (error) {
+                console.error('登录错误:', error);
+                resultDiv.innerHTML = '登录失败: ' + error.message;
+            }
+        }
+        
+        async function handleRegister(event) {
+            event.preventDefault();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '注册中...';
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            try {
+                console.log('开始注册');
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                console.log('注册响应状态:', response.status);
+                
+                const text = await response.text();
+                console.log('注册响应文本:', text);
+                
+                if (!text) {
+                    throw new Error('响应文本为空');
+                }
+                
+                const data = JSON.parse(text);
+                console.log('注册响应JSON:', data);
+                
+                if (!response.ok) {
+                    throw new Error(data.error || '注册失败');
+                }
+                
+                resultDiv.innerHTML = '注册成功: ' + JSON.stringify(data);
+            } catch (error) {
+                console.error('注册错误:', error);
+                resultDiv.innerHTML = '注册失败: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

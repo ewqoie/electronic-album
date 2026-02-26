@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单测试</title>
+</head>
+<body>
+    <h1>简单测试</h1>
+    <button onclick="testLogin()">测试登录</button>
+    <button onclick="testRegister()">测试注册</button>
+    <div id="result"></div>
+
+    <script>
+        function testLogin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '登录中...';
+
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: 'test@example.com', password: '123456' })
+            })
+            .then(response => {
+                resultDiv.innerHTML += '<br>响应状态: ' + response.status;
+                return response.text();
+            })
+            .then(text => {
+                resultDiv.innerHTML += '<br>响应文本: ' + text;
+                if (!text) {
+                    throw new Error('响应文本为空');
+                }
+                return JSON.parse(text);
+            })
+            .then(data => {
+                resultDiv.innerHTML += '<br>响应JSON: ' + JSON.stringify(data);
+                resultDiv.innerHTML += '<br>登录成功！';
+            })
+            .catch(error => {
+                resultDiv.innerHTML += '<br>错误: ' + error.message;
+            });
+        }
+
+        function testRegister() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '注册中...';
+
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: '测试用户4', email: 'test4@example.com', password: '123456' })
+            })
+            .then(response => {
+                resultDiv.innerHTML += '<br>响应状态: ' + response.status;
+                return response.text();
+            })
+            .then(text => {
+                resultDiv.innerHTML += '<br>响应文本: ' + text;
+                if (!text) {
+                    throw new Error('响应文本为空');
+                }
+                return JSON.parse(text);
+            })
+            .then(data => {
+                resultDiv.innerHTML += '<br>响应JSON: ' + JSON.stringify(data);
+                resultDiv.innerHTML += '<br>注册成功！';
+            })
+            .catch(error => {
+                resultDiv.innerHTML += '<br>错误: ' + error.message;
+            });
+        }
+    </script>
+</body>
+</html>

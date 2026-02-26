@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端测试</title>
+</head>
+<body>
+    <h1>前端测试</h1>
+    <button onclick="testRegister()">测试注册</button>
+    <button onclick="testLogin()">测试登录</button>
+    <div id="result"></div>
+
+    <script>
+        async function testRegister() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '测试注册中...';
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: '测试用户2',
+                        email: 'test2@example.com',
+                        password: '123456'
+                    })
+                });
+
+                console.log('响应状态:', response.status);
+                console.log('响应头:', response.headers);
+
+                // 尝试读取响应文本
+                const text = await response.text();
+                console.log('响应文本:', text);
+
+                // 尝试解析JSON
+                try {
+                    const data = JSON.parse(text);
+                    resultDiv.innerHTML = '注册成功: ' + JSON.stringify(data, null, 2);
+                } catch (jsonError) {
+                    resultDiv.innerHTML = '注册失败，JSON解析错误: ' + jsonError.message + '<br>响应文本: ' + text;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '注册失败: ' + error.message;
+            }
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '测试登录中...';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: '123456'
+                    })
+                });
+
+                console.log('响应状态:', response.status);
+                console.log('响应头:', response.headers);
+
+                // 尝试读取响应文本
+                const text = await response.text();
+                console.log('响应文本:', text);
+
+                // 尝试解析JSON
+                try {
+                    const data = JSON.parse(text);
+                    resultDiv.innerHTML = '登录成功: ' + JSON.stringify(data, null, 2);
+                } catch (jsonError) {
+                    resultDiv.innerHTML = '登录失败，JSON解析错误: ' + jsonError.message + '<br>响应文本: ' + text;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '登录失败: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 const db = require('./db');
 const authRoutes = require('./routes/auth');
 const libraryRoutes = require('./routes/library');
@@ -12,6 +13,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// 静态文件服务
+app.use(express.static(__dirname));
 
 // 路由
 app.use('/api/auth', authRoutes);

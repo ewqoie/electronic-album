@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电子画册阅读器</title>
+    <title>电子画册</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
         :root {
@@ -241,25 +241,121 @@
             padding-bottom: 100px; /* 为移动端翻页控件留出空间 */
         }
 
-        .pdf-container {
+        /* 3D翻书效果容器 */
+        .book-container {
             width: 100%;
             max-width: 800px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            overflow: auto;
+            margin: 0 auto;
+            perspective: 1500px;
             margin-bottom: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 500px;
         }
 
-        .pdf-container canvas {
+        .book {
             width: 100%;
-            height: auto;
+            height: 600px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        .book-page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            transform-origin: left center;
+            transition: transform 0.5s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            border-radius: 0 8px 8px 0;
+            overflow: hidden;
+        }
+
+        .book-page.back {
+            transform: rotateY(180deg);
+        }
+
+        .book-page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        .book-page canvas {
+            width: 100%;
+            height: 100%;
             display: block;
             object-fit: contain;
+        }
+
+        /* 封皮样式 */
+        .book-cover {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 8px 0 0 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform-origin: right center;
+        }
+
+        .book-cover.back {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border-radius: 0 8px 8px 0;
+            transform: rotateY(180deg);
+        }
+
+        .cover-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .cover-author {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 32px;
+        }
+
+        .cover-logo {
+            font-size: 64px;
+            margin-bottom: 32px;
+        }
+
+        /* 音乐控制 */
+        .music-control {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 1001;
+            background-color: var(--bg-secondary);
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px var(--shadow);
+        }
+
+        .music-control svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--accent);
+            fill: none;
         }
 
         [data-theme="dark"] .pdf-container {
@@ -719,7 +815,7 @@
         <div class="main-content">
             <!-- 阅读器 -->
             <div class="reader-container">
-                <div class="pdf-container" id="pdfContainer">
+                <div class="book-container" id="bookContainer">
                     <div class="loading">
                         <div class="spinner"></div>
                         <p>加载中...</p>
@@ -762,6 +858,13 @@
                     </button>
                 </div>
             </div>
+            
+            <!-- 音乐控制按钮 -->
+            <div class="music-control" id="musicControl" title="播放/暂停音乐">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+            </div>
 
             <!-- 侧边栏 -->
             <aside class="sidebar">
@@ -785,13 +888,17 @@
         // 触摸相关变量
         let touchStartX = 0;
         let touchEndX = 0;
+        // 音乐相关变量
+        let audio = null;
+        let isPlaying = false;
 
         // DOM 元素
-        const pdfContainer = document.getElementById('pdfContainer');
+        const bookContainer = document.getElementById('bookContainer');
         const pageInfo = document.getElementById('pageInfo');
         const thumbnailList = document.getElementById('thumbnailList');
         const zoomLevel = document.getElementById('zoomLevel');
         const themeToggle = document.getElementById('themeToggle');
+        const musicControl = document.getElementById('musicControl');
 
         // 触摸事件监听
         document.addEventListener('touchstart', handleTouchStart, false);
@@ -908,7 +1015,7 @@
         // 初始化
         function init() {
             // 直接显示上传提示，不尝试加载相对路径的PDF文件
-            pdfContainer.innerHTML = `
+            bookContainer.innerHTML = `
                 <div style="text-align: center; padding: 60px;">
                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 20px; color: var(--accent);">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -931,6 +1038,43 @@
             if (mobilePageInfo) {
                 mobilePageInfo.textContent = '第 0 页，共 0 页';
             }
+            
+            // 初始化音乐控制
+            initMusicControl();
+        }
+        
+        // 初始化音乐控制
+        function initMusicControl() {
+            // 创建音频对象
+            audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2774/2774-preview.mp3');
+            audio.loop = true;
+            audio.volume = 0.3;
+            
+            // 音乐控制按钮点击事件
+            musicControl.addEventListener('click', toggleMusic);
+        }
+        
+        // 切换音乐播放/暂停
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                musicControl.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                `;
+            } else {
+                audio.play().catch(err => {
+                    console.error('音乐播放失败:', err);
+                });
+                musicControl.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                `;
+            }
+            isPlaying = !isPlaying;
         }
 
         // 处理文件上传
@@ -942,7 +1086,7 @@
             
             try {
                 // 显示加载状态
-                pdfContainer.innerHTML = `
+                bookContainer.innerHTML = `
                     <div class="loading">
                         <div class="spinner"></div>
                         <p>上传中...</p>
@@ -971,6 +1115,9 @@
                         
                         zoomLevel.textContent = '100%';
                         
+                        // 创建3D翻书结构
+                        createBookStructure();
+                        
                         // 渲染第一页
                         await renderPage(currentPage);
                         
@@ -978,20 +1125,46 @@
                         await generateThumbnails();
                     } catch (error) {
                         console.error('解析 PDF 失败:', error);
-                        pdfContainer.innerHTML = '<p style="text-align: center; padding: 40px;">解析 PDF 失败，请确保文件格式正确</p>';
+                        bookContainer.innerHTML = '<p style="text-align: center; padding: 40px;">解析 PDF 失败，请确保文件格式正确</p>';
                     }
                 };
                 
                 fileReader.onerror = function() {
                     console.error('读取文件失败');
-                    pdfContainer.innerHTML = '<p style="text-align: center; padding: 40px;">读取文件失败，请稍后重试</p>';
+                    bookContainer.innerHTML = '<p style="text-align: center; padding: 40px;">读取文件失败，请稍后重试</p>';
                 };
                 
                 fileReader.readAsArrayBuffer(file);
             } catch (error) {
                 console.error('上传文件失败:', error);
-                pdfContainer.innerHTML = '<p style="text-align: center; padding: 40px;">上传文件失败，请稍后重试</p>';
+                bookContainer.innerHTML = '<p style="text-align: center; padding: 40px;">上传文件失败，请稍后重试</p>';
             }
+        }
+        
+        // 创建3D翻书结构
+        function createBookStructure() {
+            const bookTitle = document.querySelector('.document-title').textContent;
+            
+            bookContainer.innerHTML = `
+                <div class="book" id="book">
+                    <!-- 封皮 -->
+                    <div class="book-cover">
+                        <div class="cover-logo">📚</div>
+                        <div class="cover-title">${bookTitle}</div>
+                        <div class="cover-author">电子画册</div>
+                    </div>
+                    
+                    <!-- 书页容器 -->
+                    <div class="book-page" id="currentPage"></div>
+                    
+                    <!-- 封底 -->
+                    <div class="book-cover back">
+                        <div class="cover-logo">📚</div>
+                        <div class="cover-title">感谢阅读</div>
+                        <div class="cover-author">电子画册</div>
+                    </div>
+                </div>
+            `;
         }
 
         // 渲染页面
@@ -999,8 +1172,8 @@
             const page = await pdfDoc.getPage(pageNum);
             
             // 计算合适的缩放级别，确保PDF内容完整显示
-            const containerWidth = document.querySelector('.pdf-container').clientWidth;
-            const containerHeight = document.querySelector('.pdf-container').clientHeight;
+            const containerWidth = document.querySelector('.book-page').clientWidth;
+            const containerHeight = document.querySelector('.book-page').clientHeight;
             const viewport = page.getViewport({ scale: 1 });
             
             // 计算基于宽度和高度的缩放级别，确保完整显示
@@ -1015,72 +1188,13 @@
             const ctx = canvas.getContext('2d');
             canvas.width = scaledViewport.width;
             canvas.height = scaledViewport.height;
-            canvas.className = 'pdf-page';
             
-            // 找到现有的pdf-container或创建一个
-            let pdfCanvasContainer = document.querySelector('.pdf-container');
-            if (!pdfCanvasContainer) {
-                pdfCanvasContainer = document.createElement('div');
-                pdfCanvasContainer.className = 'pdf-container';
-                
-                // 重新创建完整的界面结构
-                pdfContainer.innerHTML = `
-                    <div class="pdf-container">
-                        <!-- canvas will be inserted here -->
-                    </div>
-                    
-                    <!-- 工具栏 -->
-                    <div class="toolbar">
-                        <div class="toolbar-left">
-                            <button class="btn" id="prevBtn">上一页</button>
-                            <button class="btn" id="nextBtn">下一页</button>
-                            <div class="page-info" id="pageInfo">第 ${pageNum} 页，共 ${totalPages} 页</div>
-                        </div>
-                        <div class="toolbar-right">
-                            <div class="zoom-control">
-                                <button class="btn" id="zoomOutBtn">-</button>
-                                <span id="zoomLevel">${Math.round(zoom * 100)}%</span>
-                                <button class="btn" id="zoomInBtn">+</button>
-                            </div>
-                            <button class="btn" id="fullscreenBtn">全屏</button>
-                        </div>
-                    </div>
-                    
-                    <!-- 移动端底部翻页控件 -->
-                    <div class="mobile-pagination">
-                        <button class="mobile-btn mobile-prev" id="mobilePrevBtn">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="15 18 9 12 15 6"></polyline>
-                            </svg>
-                            <span>上一页</span>
-                        </button>
-                        <div class="mobile-page-info">
-                            <span id="mobilePageInfo">第 ${pageNum} 页，共 ${totalPages} 页</span>
-                        </div>
-                        <button class="mobile-btn mobile-next" id="mobileNextBtn">
-                            <span>下一页</span>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                            </svg>
-                        </button>
-                    </div>
-                `;
-                
-                // 重新添加事件监听器
-                document.getElementById('prevBtn').addEventListener('click', showPrevPage);
-                document.getElementById('nextBtn').addEventListener('click', showNextPage);
-                document.getElementById('zoomInBtn').addEventListener('click', zoomIn);
-                document.getElementById('zoomOutBtn').addEventListener('click', zoomOut);
-                document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
-                document.getElementById('mobilePrevBtn').addEventListener('click', showPrevPage);
-                document.getElementById('mobileNextBtn').addEventListener('click', showNextPage);
-                
-                pdfCanvasContainer = document.querySelector('.pdf-container');
-            }
+            // 找到当前页面元素
+            const currentPageElement = document.getElementById('currentPage');
             
             // 只更新canvas部分
-            pdfCanvasContainer.innerHTML = '';
-            pdfCanvasContainer.appendChild(canvas);
+            currentPageElement.innerHTML = '';
+            currentPageElement.appendChild(canvas);
             
             // 渲染 PDF 内容
             const renderContext = {
@@ -1161,14 +1275,28 @@
         // 上一页
         function showPrevPage() {
             if (currentPage > 1) {
-                renderPage(currentPage - 1);
+                // 添加翻页动画效果
+                const currentPageElement = document.getElementById('currentPage');
+                currentPageElement.classList.add('flipped');
+                
+                setTimeout(() => {
+                    renderPage(currentPage - 1);
+                    currentPageElement.classList.remove('flipped');
+                }, 300);
             }
         }
 
         // 下一页
         function showNextPage() {
             if (currentPage < totalPages) {
-                renderPage(currentPage + 1);
+                // 添加翻页动画效果
+                const currentPageElement = document.getElementById('currentPage');
+                currentPageElement.classList.add('flipped');
+                
+                setTimeout(() => {
+                    renderPage(currentPage + 1);
+                    currentPageElement.classList.remove('flipped');
+                }, 300);
             }
         }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电子画册制作平台 - 自带流量的电子书制作工具</title>
+    <title>电子画册</title>
     <style>
         :root {
             --bg-primary: #ffffff;
@@ -52,15 +52,15 @@
         }
 
         .logo {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
         }
 
         .header-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
         .search-icon {
@@ -113,6 +113,53 @@
             cursor: pointer;
         }
 
+        /* 用户菜单样式 */
+        .user-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background-color: var(--bg-primary);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow);
+            padding: 8px;
+            min-width: 140px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            text-align: left;
+            border: none;
+            background: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-dropdown-item:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        .user-dropdown-item.logout {
+            color: #ff3b30;
+        }
+
         /* 主内容区域 */
         .main-content {
             display: flex;
@@ -153,10 +200,10 @@
 
         /* 标题样式 */
         .main-title {
-            font-size: 40px;
+            font-size: 48px;
             font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 20px;
+            line-height: 1.1;
+            margin-bottom: 24px;
             color: var(--text-primary);
         }
 
@@ -203,13 +250,13 @@
         }
 
         .btn-primary {
-            padding: 12px 24px;
+            padding: 14px 28px;
             background-color: var(--accent);
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             display: inline-flex;
@@ -223,7 +270,7 @@
         }
 
         .btn-secondary {
-            padding: 12px 24px;
+            padding: 14px 28px;
             background-color: var(--bg-primary);
             color: var(--text-primary);
             border: 1px solid var(--border);
@@ -244,7 +291,7 @@
         /* 书架样式 */
         .bookshelf-container {
             position: relative;
-            max-width: 400px;
+            max-width: 500px;
         }
 
         .case-link {
@@ -311,18 +358,23 @@
         }
 
         .book {
-            width: 100px;
-            height: 140px;
+            width: 120px;
+            height: 160px;
             border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
             color: white;
-            box-shadow: 0 4px 8px var(--shadow);
+            box-shadow: 0 6px 12px var(--shadow);
             position: relative;
             overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .book:hover {
+            transform: translateY(-5px);
         }
 
         .book::before {
@@ -373,6 +425,95 @@
             border-radius: 12px;
         }
 
+        /* 用户案例区域 */
+        .user-cases {
+            padding: 80px 0;
+            background-color: var(--bg-secondary);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 48px;
+            color: var(--text-primary);
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .case-card {
+            background-color: var(--bg-primary);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .case-thumbnail {
+            width: 100%;
+            height: 180px;
+            background-color: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .case-content {
+            padding: 20px;
+        }
+
+        .case-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        /* 品牌合作区域 */
+        .brands {
+            padding: 60px 0;
+            background-color: var(--bg-primary);
+        }
+
+        .brands-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 48px;
+            color: var(--text-secondary);
+        }
+
+        .brands-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .brand-logo {
+            width: 120px;
+            height: 40px;
+            background-color: var(--border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
         /* 响应式设计 */
         @media (max-width: 1024px) {
             .main-content {
@@ -400,6 +541,10 @@
 
             .feature-item p {
                 text-align: left;
+            }
+
+            .main-title {
+                font-size: 40px;
             }
         }
 
@@ -430,9 +575,22 @@
             }
 
             .book {
-                width: 80px;
-                height: 110px;
-                font-size: 10px;
+                width: 100px;
+                height: 140px;
+                font-size: 12px;
+            }
+
+            .cases-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .brands-grid {
+                gap: 24px;
+            }
+
+            .brand-logo {
+                width: 100px;
+                height: 36px;
             }
         }
     </style>
@@ -442,7 +600,7 @@
         <!-- 顶部导航栏 -->
         <header class="header">
             <div class="header-left">
-                <div class="logo">📚 电子画册</div>
+                <div class="logo">电子画册</div>
             </div>
             <div class="header-right">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -451,7 +609,14 @@
                 </svg>
                 <a href="#" class="btn">创建电子书</a>
                 <a href="library.html" class="btn btn-accent">进入工作台</a>
-                <div class="user-avatar">U</div>
+                <div class="user-menu" id="userMenu">
+                    <div class="user-avatar" id="userAvatar" onclick="toggleUserDropdown()">U</div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <button class="user-dropdown-item" onclick="goToLibrary()">我的书馆</button>
+                        <button class="user-dropdown-item logout" onclick="logout()">退出登录</button>
+                    </div>
+                </div>
+                <a href="login.html" class="btn" id="loginButton" style="display: none;">登录</a>
             </div>
         </header>
 
@@ -463,23 +628,23 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    方便，快捷，易用
+                    各大知名品牌的信赖之选
                 </div>
-                <h1 class="main-title">自带流量的 电子画册制作平台</h1>
-                <h2 class="sub-title">宣传册 电子书 杂志 内刊等</h2>
+                <h1 class="main-title">上传文件制作3D仿真翻页电子书</h1>
+                <h2 class="sub-title">电子画册，企业宣传册，期刊杂志制作发布平台，微信可读</h2>
                 
                 <div class="feature-list">
                     <div class="feature-item">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
-                        <p>上传 PDF/图片/Word，自动生成永久二维码和链接</p>
+                        <p>上传PDF/图片/Word等文件，快速制作电子书</p>
                     </div>
                     <div class="feature-item">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
-                        <p>一键分享 3D 仿真翻页电子书/手册/图册至微信或公众号</p>
+                        <p>一键分享3D仿真翻页电子书至微信或公众号</p>
                     </div>
                     <div class="feature-item">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -503,13 +668,13 @@
                 
                 <div class="action-buttons">
                     <button class="btn-primary">
-                        马上免费制作
+                        立即免费制作
                     </button>
                     <button class="btn-secondary">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polygon points="5 3 19 12 5 21 5 3"></polygon>
                         </svg>
-                        看介绍视频
+                        观看演示视频
                     </button>
                 </div>
             </div>
@@ -560,5 +725,110 @@
             </div>
         </div>
     </div>
+
+    <!-- 用户案例区域 -->
+    <div class="user-cases">
+        <div class="container">
+            <h2 class="section-title">用户案例</h2>
+            <div class="cases-grid">
+                <div class="case-card">
+                    <div class="case-thumbnail">📚</div>
+                    <div class="case-content">
+                        <div class="case-title">2026宁波教育第1期</div>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <div class="case-thumbnail">📰</div>
+                    <div class="case-content">
+                        <div class="case-title">《中国民政》杂志2026年1月下刊</div>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <div class="case-thumbnail">📄</div>
+                    <div class="case-content">
+                        <div class="case-title">潜江周刊电子版2026年第7-8期</div>
+                    </div>
+                </div>
+                <div class="case-card">
+                    <div class="case-thumbnail">🏗️</div>
+                    <div class="case-content">
+                        <div class="case-title">广西路桥·视界 第51期</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 品牌合作区域 -->
+    <div class="brands">
+        <div class="container">
+            <h3 class="brands-title">各大知名品牌的信赖之选</h3>
+            <div class="brands-grid">
+                <div class="brand-logo">品牌1</div>
+                <div class="brand-logo">品牌2</div>
+                <div class="brand-logo">品牌3</div>
+                <div class="brand-logo">品牌4</div>
+                <div class="brand-logo">品牌5</div>
+                <div class="brand-logo">品牌6</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        function checkLoginStatus() {
+            const user = localStorage.getItem('user');
+            const userMenu = document.getElementById('userMenu');
+            const loginButton = document.getElementById('loginButton');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (user) {
+                const userData = JSON.parse(user);
+                // 显示用户菜单
+                loginButton.style.display = 'none';
+                userMenu.style.display = 'inline-block';
+                
+                // 设置用户头像
+                if (userAvatar) {
+                    const initial = userData.name.charAt(0).toUpperCase();
+                    userAvatar.textContent = initial;
+                }
+            } else {
+                // 显示登录按钮
+                loginButton.style.display = 'inline-block';
+                userMenu.style.display = 'none';
+            }
+        }
+        
+        // 切换用户下拉菜单
+        function toggleUserDropdown() {
+            const userDropdown = document.getElementById('userDropdown');
+            userDropdown.classList.toggle('show');
+        }
+        
+        // 跳转到我的书馆
+        function goToLibrary() {
+            window.location.href = 'library.html';
+        }
+        
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('user');
+            alert('已退出登录');
+            window.location.reload();
+        }
+        
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const userDropdown = document.getElementById('userDropdown');
+            if (userMenu && !userMenu.contains(event.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+        
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+    </script>
 </body>
 </html>

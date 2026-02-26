@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的书馆 - 画册管理</title>
+    <title>电子画册 - 画册管理</title>
     <style>
         :root {
             --bg-primary: #f5f5f7;
@@ -37,6 +37,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 24px;
+            width: 100%;
         }
 
         /* 顶部操作区 */
@@ -47,12 +48,35 @@
             margin-bottom: 32px;
             padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
+            width: 100%;
         }
 
         .header-left {
             display: flex;
             align-items: center;
             gap: 24px;
+            flex: 1;
+        }
+
+        /* 确保用户菜单和登录按钮在右上角 */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* 搜索和筛选区域 */
+        .search-filter-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 0;
         }
 
         .title {
@@ -103,6 +127,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
+            position: relative;
         }
 
         .search-container {
@@ -364,46 +389,140 @@
         /* 响应式设计 */
         @media (max-width: 768px) {
             .container {
-                padding: 16px;
+                padding: 12px;
             }
 
             .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 16px;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 24px;
+                flex-wrap: wrap;
+                width: 100%;
             }
 
             .header-left {
-                justify-content: space-between;
+                flex: 1;
+                min-width: 0;
+                justify-content: flex-start;
+                gap: 12px;
+                flex-wrap: wrap;
             }
 
             .header-right {
-                flex-wrap: wrap;
-                gap: 12px;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+                flex-shrink: 0;
+            }
+
+            .search-filter-container {
+                width: 100%;
+                order: 3;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                margin-top: 8px;
+            }
+
+            .search-container {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .filter-container {
+                flex-shrink: 0;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .header-right {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 8px;
+            }
+
+            .search-filter-container {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            /* 确保用户菜单和登录按钮在移动端也在右上角 */
+            .user-menu,
+            #loginButton {
+                align-self: flex-end;
             }
 
             .search-input {
                 width: 100%;
+                padding: 8px 36px 8px 12px;
+                font-size: 13px;
+            }
+
+            .select {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .sort-toggle {
+                padding: 8px;
             }
 
             .library-card {
                 flex-direction: column;
                 align-items: stretch;
                 text-align: center;
+                padding: 16px;
+                gap: 16px;
             }
 
             .thumbnail {
                 align-self: center;
+                width: 64px;
+                height: 64px;
+                font-size: 24px;
+            }
+
+            .library-name {
+                font-size: 15px;
+            }
+
+            .library-description {
+                font-size: 13px;
             }
 
             .library-meta {
                 justify-content: center;
                 flex-wrap: wrap;
+                font-size: 11px;
+                gap: 8px;
             }
 
             .library-actions {
                 justify-content: center;
-                margin-top: 12px;
+                margin-top: 8px;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .action-btn {
+                padding: 6px;
+            }
+
+            .action-btn svg {
+                width: 14px;
+                height: 14px;
             }
         }
 
@@ -473,26 +592,29 @@
                 </button>
             </div>
             <div class="header-right">
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="搜索书馆" id="searchInput">
-                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </div>
-                <div class="filter-container">
-                    <select class="select" id="timeFilter">
-                        <option value="all">时间不限</option>
-                        <option value="today">今天</option>
-                        <option value="week">本周</option>
-                        <option value="month">本月</option>
-                        <option value="year">今年</option>
-                    </select>
-                    <button class="sort-toggle" id="sortToggle" title="切换排序">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="18 15 12 9 6 15"></polyline>
+                <!-- 搜索和筛选区域 -->
+                <div class="search-filter-container">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="搜索书馆" id="searchInput">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
-                    </button>
+                    </div>
+                    <div class="filter-container">
+                        <select class="select" id="timeFilter">
+                            <option value="all">时间不限</option>
+                            <option value="today">今天</option>
+                            <option value="week">本周</option>
+                            <option value="month">本月</option>
+                            <option value="year">今年</option>
+                        </select>
+                        <button class="sort-toggle" id="sortToggle" title="切换排序">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="18 15 12 9 6 15"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <!-- 登录/用户菜单 -->
                 <div id="loginButton" class="btn" onclick="window.location.href='login.html'">登录</div>
@@ -869,7 +991,7 @@
                         <div class="library-description">${library.description}</div>
                         <div class="library-meta">
                             <span>分类: ${library.category}</span>
-                            <span>标签: ${Array.isArray(library.tags) ? library.tags.join(', ') : library.tags}</span>
+                            <span>标签: ${Array.isArray(library.tags) ? library.tags.join(', ') : (typeof library.tags === 'string' ? JSON.parse(library.tags).join(', ') : library.tags)}</span>
                             <span>创建时间: ${formatDate(library.createdAt)}</span>
                             <span>更新时间: ${formatDate(library.updatedAt)}</span>
                         </div>
@@ -1114,7 +1236,8 @@
             if (newName && newName.trim()) {
                 const newDescription = prompt('请输入书馆简介:', library.description);
                 const newCategory = prompt('请输入书馆分类:', library.category);
-                const currentTags = Array.isArray(library.tags) ? library.tags.join(',') : '';
+                const currentTags = Array.isArray(library.tags) ? library.tags.join(',') : (typeof library.tags === 'string' ? JSON.parse(library.tags).join(',') : '');
+            
                 const newTags = prompt('请输入书馆标签（用逗号分隔）:', currentTags);
                 
                 try {
@@ -1904,7 +2027,7 @@
                             <p style="color: #666; margin: 10px 0;">${library.description}</p>
                             <div style="color: #999; font-size: 14px; margin-top: 20px;">
                                 分类: ${library.category}<br>
-                                标签: ${Array.isArray(library.tags) ? library.tags.join(', ') : library.tags}
+                                标签: ${Array.isArray(library.tags) ? library.tags.join(', ') : (typeof library.tags === 'string' ? JSON.parse(library.tags).join(', ') : library.tags)}
                             </div>
                         </div>
                     </div>

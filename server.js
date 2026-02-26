@@ -14,17 +14,17 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// 根路径重定向到home.html - 放在静态文件服务之前
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'home.html'));
+});
+
 // 静态文件服务
 app.use(express.static(__dirname));
 
 // 路由
 app.use('/api/auth', authRoutes);
 app.use('/api/libraries', libraryRoutes);
-
-// 根路径重定向到home.html
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'home.html'));
-});
 
 // 健康检查
 app.get('/health', (req, res) => {

@@ -38,6 +38,7 @@ router.post('/register', async (req, res) => {
       token
     });
   } catch (error) {
+    console.error('注册错误:', error);
     res.status(500).json({ error: '服务器错误' });
   }
 });
@@ -72,6 +73,7 @@ router.post('/login', async (req, res) => {
       token
     });
   } catch (error) {
+    console.error('登录错误:', error);
     res.status(500).json({ error: '服务器错误' });
   }
 });
@@ -101,6 +103,7 @@ router.get('/me', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('获取用户信息错误:', error);
     res.status(401).json({ error: '无效的token' });
   }
 });

@@ -40,22 +40,47 @@
             width: 100%;
         }
 
-        /* 顶部操作区 */
+        /* 顶部导航栏 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
-            padding-bottom: 16px;
+            padding: 16px 0;
             border-bottom: 1px solid var(--border);
-            width: 100%;
+            margin-bottom: 32px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
             gap: 24px;
-            flex: 1;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
         }
 
         /* 确保用户菜单和登录按钮在右上角 */
@@ -402,6 +427,13 @@
                 width: 100%;
             }
 
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                gap: 16px;
+            }
+
             .header-left {
                 flex: 1;
                 min-width: 0;
@@ -419,7 +451,7 @@
 
             .search-filter-container {
                 width: 100%;
-                order: 3;
+                order: 4;
                 flex-direction: row;
                 align-items: center;
                 justify-content: space-between;
@@ -581,9 +613,16 @@
 </head>
 <body>
     <div class="container">
-        <!-- 顶部操作区 -->
+        <!-- 顶部导航栏 -->
         <div class="header">
             <div class="header-left">
+                <div class="logo">电子画册</div>
+                <div class="nav-links">
+                    <a href="home.html" class="nav-link">首页</a>
+                    <a href="pricing.html" class="nav-link">价格方案</a>
+                    <a href="library.html" class="nav-link active">我的书馆</a>
+                    <a href="#" class="nav-link">帮助中心</a>
+                </div>
                 <h1 class="title">我的书馆</h1>
                 <a href="index.html" class="nav-link">返回阅读器</a>
                 <button class="btn btn-accent" id="newLibraryBtn">

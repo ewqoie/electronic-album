@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电子画册 - 价格方案</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f9ff;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --border: #d2d2d7;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --success: #34c759;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* 用户菜单样式 */
+        .user-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background-color: var(--bg-primary);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow);
+            padding: 8px;
+            min-width: 140px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            text-align: left;
+            border: none;
+            background: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-dropdown-item:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        .user-dropdown-item.logout {
+            color: #ff3b30;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 价格方案卡片 */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .pricing-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px 24px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            box-shadow: 0 8px 24px var(--shadow);
+            transform: translateY(-5px);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--accent);
+            box-shadow: 0 4px 16px rgba(0, 113, 227, 0.1);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .plan-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .plan-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .price {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .price-unit {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .feature-list {
+            margin-bottom: 32px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .feature-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--success);
+            flex-shrink: 0;
+        }
+
+        .feature-item.unsupported svg {
+            color: var(--text-secondary);
+        }
+
+        .feature-item.unsupported {
+            color: var(--text-secondary);
+            text-decoration: line-through;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        /* 功能对比表格 */
+        .feature-comparison {
+            margin-bottom: 60px;
+        }
+
+        .comparison-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: var(--text-primary);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-primary);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background-color: var(--bg-secondary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .feature-category {
+            font-weight: 600;
+            background-color: var(--bg-secondary);
+        }
+
+        .check-icon {
+            color: var(--success);
+            font-size: 18px;
+        }
+
+        .cross-icon {
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        /* 常见问题 */
+        .faq-section {
+            margin-bottom: 60px;
+        }
+
+        .faq-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            color: var(--text-primary);
+        }
+
+        .faq-item {
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 16px;
+            background-color: var(--bg-secondary);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .faq-answer {
+            padding: 0 16px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-answer.active {
+            padding: 16px;
+            max-height: 200px;
+        }
+
+        /* 页脚 */
+        .footer {
+            background-color: var(--bg-secondary);
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .footer-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-section ul li a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                gap: 16px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .price {
+                font-size: 28px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">电子画册</div>
+                <div class="nav-links">
+                    <a href="home.html" class="nav-link">首页</a>
+                    <a href="pricing.html" class="nav-link active">价格方案</a>
+                    <a href="library.html" class="nav-link">我的书馆</a>
+                    <a href="#" class="nav-link">帮助中心</a>
+                </div>
+            </div>
+            <div class="header-right">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <a href="#" class="btn">创建电子书</a>
+                <a href="library.html" class="btn btn-accent">进入工作台</a>
+                <div class="user-menu" id="userMenu">
+                    <div class="user-avatar" id="userAvatar" onclick="toggleUserDropdown()">U</div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <button class="user-dropdown-item" onclick="goToLibrary()">我的书馆</button>
+                        <button class="user-dropdown-item logout" onclick="logout()">退出登录</button>
+                    </div>
+                </div>
+                <a href="login.html" class="btn" id="loginButton" style="display: none;">登录</a>
+            </div>
+        </header>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <h1 class="section-title">选择适合您的方案</h1>
+            <p class="section-subtitle">电子画册提供多种价格方案，满足不同用户的需求。从个人用户到企业用户，都能找到适合自己的方案。</p>
+
+            <!-- 价格方案卡片 -->
+            <div class="pricing-grid">
+                <!-- 免费版 -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">免费版</h3>
+                    <p class="plan-description">适合个人用户和小型项目</p>
+                    <div class="price">¥0</div>
+                    <div class="price-unit">/ 年</div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>不限阅读次数</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>12本 / 年 制作数量</span>
+                        </div>
+                        <div class="feature-item unsupported">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                            <span>自定义域名</span>
+                        </div>
+                        <div class="feature-item unsupported">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                            <span>无广告</span>
+                        </div>
+                    </div>
+                    <button class="btn-secondary">免费使用</button>
+                </div>
+
+                <!-- 基础版 -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">基础版</h3>
+                    <p class="plan-description">适合小型企业和专业用户</p>
+                    <div class="price">¥398</div>
+                    <div class="price-unit">/ 年</div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>不限阅读次数</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>50本 / 年 制作数量</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>免广告1万次/年</span>
+                        </div>
+                        <div class="feature-item unsupported">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                            <span>自定义域名</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary">立即购买</button>
+                </div>
+
+                <!-- 高级版 -->
+                <div class="pricing-card featured">
+                    <div class="featured-badge">推荐</div>
+                    <h3 class="plan-name">高级版</h3>
+                    <p class="plan-description">适合中型企业和专业团队</p>
+                    <div class="price">¥1398</div>
+                    <div class="price-unit">/ 年</div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>不限阅读次数</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>200本 / 年 制作数量</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>免广告12万次/年</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>自定义域名</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary">立即购买</button>
+                </div>
+
+                <!-- 旗舰版 -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">旗舰版</h3>
+                    <p class="plan-description">适合大型企业和机构</p>
+                    <div class="price">¥3998</div>
+                    <div class="price-unit">/ 年</div>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>不限阅读次数</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>500本 / 年 制作数量</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>无广告</span>
+                        </div>
+                        <div class="feature-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>自定义域名</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary">立即购买</button>
+                </div>
+            </div>
+
+            <!-- 功能对比表格 -->
+            <div class="feature-comparison">
+                <h2 class="comparison-title">各版本功能对比</h2>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>功能</th>
+                            <th>免费版</th>
+                            <th>基础版</th>
+                            <th>高级版</th>
+                            <th>旗舰版</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="feature-category">
+                            <td>常规权限</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>阅读次数</td>
+                            <td><span class="check-icon">✓</span> 不限</td>
+                            <td><span class="check-icon">✓</span> 不限</td>
+                            <td><span class="check-icon">✓</span> 不限</td>
+                            <td><span class="check-icon">✓</span> 不限</td>
+                        </tr>
+                        <tr>
+                            <td>免广告次数</td>
+                            <td><span class="cross-icon">✗</span> 不定时投放广告</td>
+                            <td><span class="check-icon">✓</span> 1万次/年</td>
+                            <td><span class="check-icon">✓</span> 12万次/年</td>
+                            <td><span class="check-icon">✓</span> 无广告</td>
+                        </tr>
+                        <tr>
+                            <td>制作书本数量</td>
+                            <td><span class="check-icon">✓</span> 12本/年</td>
+                            <td><span class="check-icon">✓</span> 50本/年</td>
+                            <td><span class="check-icon">✓</span> 200本/年</td>
+                            <td><span class="check-icon">✓</span> 500本/年</td>
+                        </tr>
+                        <tr class="feature-category">
+                            <td>品牌权限</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>自定义域名</td>
+                            <td><span class="cross-icon">✗</span></td>
+                            <td><span class="cross-icon">✗</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>去除云展网logo</td>
+                            <td><span class="cross-icon">✗</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                        </tr>
+                        <tr class="feature-category">
+                            <td>内容编辑</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>添加视频</td>
+                            <td><span class="cross-icon">✗</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>添加音乐</td>
+                            <td><span class="cross-icon">✗</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 常见问题 -->
+            <div class="faq-section">
+                <h2 class="faq-title">常见问题</h2>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>如何选择适合我的方案？</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        <p>根据您的使用需求和预算选择合适的方案。如果您是个人用户或小型项目，免费版可能已经足够；如果您是企业用户或需要更多功能，建议选择基础版或高级版。</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>如何升级我的方案？</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        <p>登录您的账号，进入"我的账户"页面，选择"升级方案"，然后按照提示完成升级流程。</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>是否支持退款？</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        <p>在购买后7天内，如果您对我们的服务不满意，可以申请全额退款。</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFaq(this)">
+                        <span>如何使用自定义域名？</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-answer">
+                        <p>高级版及以上用户可以在"设置"页面添加自定义域名，按照提示完成域名解析和配置。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>电子画册</h3>
+                    <ul>
+                        <li><a href="home.html">首页</a></li>
+                        <li><a href="pricing.html">价格方案</a></li>
+                        <li><a href="library.html">我的书馆</a></li>
+                        <li><a href="#">帮助中心</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>产品服务</h3>
+                    <ul>
+                        <li><a href="#">企业宣传册</a></li>
+                        <li><a href="#">产品画册</a></li>
+                        <li><a href="#">期刊杂志</a></li>
+                        <li><a href="#">教辅教材</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>关于我们</h3>
+                    <ul>
+                        <li><a href="#">公司简介</a></li>
+                        <li><a href="#">联系我们</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">用户协议</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>联系我们</h3>
+                    <ul>
+                        <li>邮箱：support@example.com</li>
+                        <li>电话：400-123-4567</li>
+                        <li>地址：北京市朝阳区</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 电子画册 版权所有</p>
+                <div class="social-links">
+                    <a href="#" style="margin-right: 16px;">微信</a>
+                    <a href="#" style="margin-right: 16px;">微博</a>
+                    <a href="#">抖音</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 检查登录状态
+        function checkLoginStatus() {
+            const user = localStorage.getItem('user');
+            const userMenu = document.getElementById('userMenu');
+            const loginButton = document.getElementById('loginButton');
+            const userAvatar = document.getElementById('userAvatar');
+            
+            if (user) {
+                const userData = JSON.parse(user);
+                // 显示用户菜单
+                loginButton.style.display = 'none';
+                userMenu.style.display = 'inline-block';
+                
+                // 设置用户头像
+                if (userAvatar) {
+                    const initial = userData.name.charAt(0).toUpperCase();
+                    userAvatar.textContent = initial;
+                }
+            } else {
+                // 显示登录按钮
+                loginButton.style.display = 'inline-block';
+                userMenu.style.display = 'none';
+            }
+        }
+        
+        // 切换用户下拉菜单
+        function toggleUserDropdown() {
+            const userDropdown = document.getElementById('userDropdown');
+            userDropdown.classList.toggle('show');
+        }
+        
+        // 跳转到我的书馆
+        function goToLibrary() {
+            window.location.href = 'library.html';
+        }
+        
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('user');
+            alert('已退出登录');
+            window.location.reload();
+        }
+        
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const userDropdown = document.getElementById('userDropdown');
+            if (userMenu && !userMenu.contains(event.target)) {
+                userDropdown.classList.remove('show');
+            }
+        });
+        
+        // 切换FAQ答案
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('active');
+            const icon = element.querySelector('svg');
+            if (answer.classList.contains('active')) {
+                icon.innerHTML = '<polyline points="18 15 12 9 6 15"></polyline>';
+            } else {
+                icon.innerHTML = '<polyline points="6 9 12 15 18 9"></polyline>';
+            }
+        }
+        
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+    </script>
+</body>
+</html>

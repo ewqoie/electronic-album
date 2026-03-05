@@ -57,6 +57,27 @@
             color: var(--accent);
         }
 
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+        }
+
         .header-right {
             display: flex;
             align-items: center;
@@ -623,6 +644,18 @@
         }
 
         @media (max-width: 768px) {
+            .header {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .nav-links {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                gap: 16px;
+            }
+
             .main-title {
                 font-size: 32px;
             }
@@ -675,6 +708,12 @@
         <header class="header">
             <div class="header-left">
                 <div class="logo">电子画册</div>
+                <div class="nav-links">
+                    <a href="home.html" class="nav-link active">首页</a>
+                    <a href="pricing.html" class="nav-link">价格方案</a>
+                    <a href="library.html" class="nav-link">我的书馆</a>
+                    <a href="#" class="nav-link">帮助中心</a>
+                </div>
             </div>
             <div class="header-right">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
